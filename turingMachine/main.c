@@ -7,9 +7,10 @@
 
 #include <stdio.h>
 #include <strings.h>
+#include <stdlib.h>
 
 
-char tape[50] = {"                                                "};
+ 
 
 struct Configuration {
    char  mConfig[2];
@@ -23,7 +24,8 @@ int main(int argc, const char * argv[]) {
     struct Configuration configs[500];
     struct Configuration *ptrConfig = &configs[0];
     
-    char *prtTape = &tape[0];
+    char tape[500] = " " ;
+    char *ptrTape=tape;
     
     int i = 0;
     
@@ -62,21 +64,28 @@ int main(int argc, const char * argv[]) {
    
     int k = 0;
     
+    
     while (k<i) {
-        config = configs[i];
+        config = configs[k];
         
         printf("%s\n",config.mConfig);
-        switch (strcmp(*prtTape,config.symbol)) {
         
+
+      
                 
-            case 0:
+        if (strcmp(config.symbol,"None") == 0 ) {
+                
+                if ( strcmp(ptrTape," ") == 0) {
+                    
+                    printf("is empty\n");
     
-                for ( int j = 0; j < strlen(config.operations);j++) {
+                for ( int j = 0; j < 3;j++) {
                     printf("%s\n",config.operations[j]);
+                    }
                 }
         }
         
-                  prtTape++;
+                  ptrTape++;
         k++;
     }
     
