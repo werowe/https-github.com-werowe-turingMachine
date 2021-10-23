@@ -16,7 +16,7 @@ struct Configuration {
    char  symbol[50];
    char  operations[5][3];
    char  finalMConfig[2];
-} book;
+};
 
 int main(int argc, const char * argv[]) {
     
@@ -60,8 +60,9 @@ int main(int argc, const char * argv[]) {
     configs[i++]=config;
     
    
+    int k = 0;
     
-    while (i>0) {
+    while (k<i) {
         config = configs[i];
         
         printf("%s\n",config.mConfig);
@@ -76,7 +77,7 @@ int main(int argc, const char * argv[]) {
         }
         
                   prtTape++;
-        i--;
+        k++;
     }
     
     printf("done\n");
