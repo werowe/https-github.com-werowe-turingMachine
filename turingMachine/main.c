@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     
     char strConfig[4][50] =
     {
-         "b|None|P0|R|c",
+         "b|None|P0^R|c",
          "c|None|R|e",
           "e|None|P1^R|f",
           "f|None|R|b"
