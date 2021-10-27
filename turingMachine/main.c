@@ -6,59 +6,74 @@
 //
 
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 
 struct Configuration {
-   int mConfig;
+   char mConfig[2];
    char  symbol[50];
    char  operations[5][3];
-   int finalMConfig;
+   char nextConfig[2];
 };
 
 int main(int argc, const char * argv[]) {
     
+
     struct Configuration configs[500];
-    struct Configuration *ptrConfig = &configs[0];
+  
     
     char tape[] = "                                                                                                                  " ;
     char *ptrTape=tape;
     
     int i = 0;
+ 
+    struct Configuration config = {"a", "a", {"a"}, "a"};
     
-    struct Configuration config = {
-      (int) 'b',
-        "None",
-        {"P0","R"},
-        (int) 'c'
+    char strConfig[4][50] =
+    {
+         "b|None|P0|R|c",
+         "c|None|R|e",
+          "e|None|P1^R|f",
+          "f|None|R|b"
     };
-  
+    
 
-    configs[i++]=config;
+    int g;
     
-    config.mConfig=(int) 'c';
-    strcpy(config.symbol,"None");
-    strcpy(config.operations[0],"R");
-    config.finalMConfig=(int)('e');
-      
-    configs[i++]=config;
+    for(int a=0; a < 4; a++ ) {
+        char * workStr = strConfig[a];
+         char * token = strtok( workStr, "|");
+         int b=0;
+         while( token != NULL ) {
+              switch(b){
+              case 0:
+                    strcpy(config.mConfig,token);
+                    break;
+              case 1:
+                    strcpy(config.symbol,token);
+                    break;
+              case 2:
+                      g=0;
+                      char * tk = strtok(token, "^");
+                      while (tk != NULL) {
+                          strcpy(config.operations[g],tk);
+                          g++;
+                          tk = strtok( NULL, "^");
+                      }
+                    break;
+              case 3:
+                    strcpy(config.nextConfig,token);
+                    break;
+              }
+              token = strtok( NULL, "|");
+              b++;
+            
+      }
+        configs[i++]=config;
+    }
+
+  
     
-    config.mConfig=(int) 'e';
-    strcpy(config.symbol,"None");
-    strcpy(config.operations[0],"P1");
-    strcpy(config.operations[1],"R");
-    config.finalMConfig=(int) 'f';
-      
-    configs[i++]=config;
-    
-    config.mConfig = (int) 'f';
-    strcpy(config.symbol,"None");
-    strcpy(config.operations[0],"R");
-    config.finalMConfig = (int) 'b';
-      
-    configs[i++]=config;
-    
-   
     int times = 0; // control number of runs
     int stop = 20; // control number of runs
   
@@ -70,9 +85,9 @@ int main(int argc, const char * argv[]) {
             config = configs[whichConfig];
         }
         
-        printf("mConfig %c finalMConfig %c \n",(char) config.mConfig, (char) config.finalMConfig);
+        printf("mConfig %s nextConfig %s \n",  config.mConfig,  config.nextConfig);
     
-        /* if tape position is None */
+        // if tape position is None
         if (strcmp(config.symbol,"None") == 0 ) {
                 
         
@@ -90,19 +105,16 @@ int main(int argc, const char * argv[]) {
                     if ( strcmp(config.operations[j],"R") == 0) {
                         ptrTape++;
                        }
-                    
-                    
-                    // loop through and find the config to load.  it should be finalMConfig
-                
+             
                         
                     }
             
-            printf("search for %c int %i \n", (char) config.finalMConfig, config.finalMConfig);
+           // printf("search for %c int %i \n", (char) config.nextConfig, config.nextConfig);
             
             for (int x=0; x < i; x++) {
-                printf("searching config %c next config %c \n", configs[x].finalMConfig, configs[x].mConfig);
-                if (configs[x].mConfig == config.finalMConfig) {
-                    printf("found config %c next config %c \n", configs[x].mConfig, configs[x].finalMConfig);
+              //  printf("searching config %c next config %c \n", configs[x].nextConfig, configs[x].mConfig);
+                if (strcmp(configs[x].mConfig,config.nextConfig) == 0) {
+                 //   printf("found config %c next config %c \n", configs[x].mConfig, configs[x].nextConfig);
                     config = configs[x];
                     break;
                 }
@@ -111,11 +123,11 @@ int main(int argc, const char * argv[]) {
         }
         
         times++;
-        printf("ptrTape %s",tape );
+        printf("ptrTape %s\n",tape );
     }
     
    
     printf("done\n");
     
-    
+ 
 }
