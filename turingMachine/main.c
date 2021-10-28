@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <math.h>;
+
 
 struct Configuration {
    char mConfig[2];
@@ -79,7 +82,7 @@ int main(int argc, const char * argv[]) {
   
     
     int times = 0; // control number of runs
-    int stop = 20; // control number of runs
+    int stop = 400; // control number of runs
   
     
     int whichConfig=0;
@@ -133,5 +136,25 @@ int main(int argc, const char * argv[]) {
    
     printf("done\n");
     
+    int exp=-1;
+    
+   
+  
+    double rational=0;
+    
+    // calculate like this:
+    //
+    // .01010101=(2**-2)+(2**-4)+(2**-6)=0.333333
+    
+    for (int l = 0; l < strlen(tape); l++) {
+        if (isdigit(tape[l])) {
+            if ( (int) tape[l] == '1') {
+                rational = rational + pow(2, exp);
+            }
+            exp--;
+        }
+    }
+    
+   printf("in decimal this is . %.15f\n", rational);
  
 }
