@@ -42,7 +42,11 @@ int main(int argc, const char * argv[]) {
     
     for(int a=0; a < 4; a++ ) {
         char * workStr = strConfig[a];
-         char * token = strtok( workStr, "|");
+        const char * ptrNextConfig = strrchr(strConfig[a], '|');
+        strcpy(config.nextConfig,ptrNextConfig+1);
+        const char s[2] = "|";
+        const char c[2] = "^";
+         char * token = strtok( workStr, s);
          int b=0;
          while( token != NULL ) {
               switch(b){
@@ -54,18 +58,18 @@ int main(int argc, const char * argv[]) {
                     break;
               case 2:
                       g=0;
-                      char * tk = strtok(token, "^");
+                      char * tk = strtok(token, c);
                       while (tk != NULL) {
                           strcpy(config.operations[g],tk);
                           g++;
-                          tk = strtok( NULL, "^");
+                          tk = strtok( NULL, c);
                       }
                     break;
               case 3:
-                    strcpy(config.nextConfig,token);
+                   // grabbed last one up top
                     break;
               }
-              token = strtok( NULL, "|");
+              token = strtok( NULL, s);
               b++;
             
       }
