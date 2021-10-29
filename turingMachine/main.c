@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <math.h>;
+#include <math.h>
 
 
 struct Configuration {
@@ -24,7 +24,6 @@ int main(int argc, const char * argv[]) {
 
     struct Configuration configs[500];
   
-    
     char tape[] = "                                                                                                                  " ;
     char *ptrTape=tape;
     
@@ -57,7 +56,11 @@ int main(int argc, const char * argv[]) {
                     strcpy(config.mConfig,token);
                     break;
               case 1:
-                    strcpy(config.symbol,token);
+                      if (strcmp(token, "None") == 0) {
+                            strcpy(config.symbol, " ");
+                      } else {
+                              strcpy(config.symbol,token);
+                      }
                     break;
               case 2:
                       g=0;
@@ -78,8 +81,6 @@ int main(int argc, const char * argv[]) {
       }
         configs[i++]=config;
     }
-
-  
     
     int times = 0; // control number of runs
     int stop = 400; // control number of runs
@@ -92,12 +93,12 @@ int main(int argc, const char * argv[]) {
             config = configs[whichConfig];
         }
         
-        printf("mConfig %s nextConfig %s \n",  config.mConfig,  config.nextConfig);
-    
-        // if tape position is None
-        if (strcmp(config.symbol,"None") == 0 ) {
-                
+        char symbol[]=" ";
+        strncpy(symbol,ptrTape, 1);
         
+        // if tape position is None
+        if (strcmp(symbol, config.symbol) == 0) {
+                
             // loop through array of operations
     
                 for ( int j = 0; j < 3;j++) {
