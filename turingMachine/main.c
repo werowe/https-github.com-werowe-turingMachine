@@ -38,11 +38,25 @@ int main(int argc, const char * argv[]) {
           "e|None|P1^R|f",
           "f|None|R|b"
     };
+ 
+
+    /*
+    char strConfig[3][50] =
+      {
+           "b|None|P0|b",
+           "b|0|R^R^P1|b",
+           "b|1|R^R^P0|b"
+      };
+     */
     
 
     int g;
     
-    for(int a=0; a < 4; a++ ) {
+      int total = sizeof(strConfig);
+      int columns = sizeof(strConfig[0]);
+      int rows = total / columns;
+    
+    for(int a=0; a < rows; a++ ) {
         char * workStr = strConfig[a];
         const char * ptrNextConfig = strrchr(strConfig[a], '|');
         strcpy(config.nextConfig,ptrNextConfig+1);
@@ -101,7 +115,7 @@ int main(int argc, const char * argv[]) {
                 
             // loop through array of operations
     
-                for ( int j = 0; j < 3;j++) {
+                for ( int j = 0; j < columns;j++) {
                   
                     
                     if ( strcmp(config.operations[j],"P0") == 0) {
