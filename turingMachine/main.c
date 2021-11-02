@@ -17,10 +17,10 @@
 #define CARET "^"
 
 struct Configuration {
-   char mConfig[2];
+   char mConfig[3];
    char  symbol[50];
    char  operations[15][3];
-   char nextConfig[2];
+   char nextConfig[3];
 };
 
 int main(int argc, const char * argv[]) {
@@ -87,17 +87,21 @@ int main(int argc, const char * argv[]) {
       int columns = sizeof(strConfig[0]);
       int rows = total / columns;
     
+    
+    printf("\n==============consuming rules =====================\n");
+    
     for(int row=0; row < rows; row++ ) {
         char * workStr = strConfig[row];
         const char * ptrNextConfig = strrchr(strConfig[row], '|');
         strcpy(config.nextConfig,ptrNextConfig+1);
-    
+        
          char * token = strtok( workStr, PIPE);
          int b=0;
          while( token != NULL ) {
               switch(b){
               case 0:
-                    strcpy(config.mConfig,token);
+                   strcpy(config.mConfig,token);
+                      printf("mConfig %s ", config.mConfig);
                     break;
               case 1:
                       if (strcmp(token, "None") == 0) {
@@ -105,18 +109,22 @@ int main(int argc, const char * argv[]) {
                       } else {
                               strcpy(config.symbol,token);
                       }
+                      printf(" symbol %s", config.symbol);
                     break;
               case 2:
                       g=0;
                       char * tk = strtok(token, CARET);
                       while (tk != NULL) {
                           strcpy(config.operations[g],tk);
+                          printf( " operation %s ", config.operations[g]);
                           g++;
                           tk = strtok( NULL, CARET);
+                       
                       }
                     break;
               case 3:
                    // grabbed last one up top
+                          printf("next mConfig %s\n", ptrNextConfig);
                     break;
               }
               token = strtok( NULL, PIPE);
@@ -124,6 +132,8 @@ int main(int argc, const char * argv[]) {
             
       }
         configs[i++]=config;
+             printf("\n===================end of that mConfig=================\n");
+    
     }
     
  
@@ -155,49 +165,64 @@ int main(int argc, const char * argv[]) {
             
             // loop through array of operations
     
-                for ( int j = 0; j < columns;j++) {
-                    printf("operation %s\n", config.operations[j]);
+                for ( int j = 0; j < columns; j++) {
+                    
+                    // poor way of checking whether operation is empty, better way is variable size of array
+                    
+                 /*   if (strcmp(config.operations[j],"")!=0) {
+                        printf("operation %s\n", config.operations[j]);
+                    }else {
+                        break;
+                    } */
+                    
                     
                     if ( (int) config.operations[j][0]== 'P') {
+                        printf("printing %s \n", config.operations[j]);
                         *ptrTape=(int) config.operations[j][1];
                        }
                     
                     if ( (int) config.operations[j][0]== 'E') {
+                        printf("erasing %s \n", config.operations[j]);
                         *ptrTape=' ';
                        }
             
                     if ( strcmp(config.operations[j],"R") == 0) {
+                        printf("move right\n");
                         ptrTape++;
                        }
                     
                     if ( strcmp(config.operations[j],"L") == 0) {
+                        printf("move left\n");
                         ptrTape--;
                        }
                     
-                    printf("tape %s\n", tape);
+                    printf("tape %sEND\n", tape);
                         
                     }
+                }
             
-           // printf("search for %c int %i \n", (char) config.nextConfig, config.nextConfig);
+           printf("looking for next mConfig %s \n", config.nextConfig);
             
            // i is how many config objects there are
             for (int x=0; x < i; x++) {
-              //  printf("searching config %c next config %c \n", configs[x].nextConfig, configs[x].mConfig);
+                printf("searching config %s next config %s \n", configs[x].nextConfig, configs[x].mConfig);
                 if (strcmp(configs[x].mConfig,config.nextConfig) == 0) {
-                 //   printf("found config %c next config %c \n", configs[x].mConfig, configs[x].nextConfig);
+                    printf("found config %s next config %s \n", configs[x].mConfig, configs[x].nextConfig);
                     config = configs[x];
                     break;
                 }
             }
             
+        
         }
         
         times++;
         printf("ptrTape %s\n",tape );
-    }
+    
     
    
-    printf("done\n");
+     printf("done\n");
+   
     
     int exp=-1;
     
@@ -219,5 +244,5 @@ int main(int argc, const char * argv[]) {
     }
     
    printf("in decimal this is . %.15f\n", rational);
- 
 }
+ 
