@@ -15,11 +15,12 @@
 
 #define PIPE "|"
 #define CARET "^"
+#define OPLEN 15
 
 struct Configuration {
    char mConfig[3];
    char  symbol[50];
-   char  operations[15][3];
+    char  operations[OPLEN][3];
    char nextConfig[3];
 };
 
@@ -35,30 +36,30 @@ int main(int argc, const char * argv[]) {
    // it's ok to have the same letter for the m_config more than once.  we want it to just jump to that first instruction
     // then loop through the others
     
-    char strConfig[3][50] = {
+   /* char strConfig[3][50] = {
         "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d1",
         "d1|1|R^Px^L^L^L|d2",
         "d2|0|R^Px^L^L^L|a"
     };
     
-    /*
+    */
     
     char strConfig[12][50] = {
-        "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d",
+        "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d1",
         "d1|1|R^Px^L^L^L|d2",
-        "d2|0|R^Px^L^L^L|q",
-        "q|0|R^R|q1",
-        "q1|1|R^R|q2",
-        "q2|None|P1^L|p",
-        "p|x|E^R|q",
-        "p|@|R|f",
-        "p|None|L^L|p",
-        "f|0|R^R|f",
-        "f|1|R^R|f",
-        "f|None|P0^L^L|d",
+        "d2|0|R^Px^L^L^L|q1",
+        "q1|0|R^R|q2",
+        "q2|1|R^R|q3",
+        "q3|None|P1^L|p1",
+        "p2|x|E^R|q1",
+        "p1|@|R|f1",
+        "p2|None|L^L|p1",
+        "f1|0|R^R|f2",
+        "f2|1|R^R|f3",
+        "f3|None|P0^L^L|d1",
     };
     
-     */
+  
     
     
     /* 0.01010101001
@@ -87,8 +88,10 @@ int main(int argc, const char * argv[]) {
       int columns = sizeof(strConfig[0]);
       int rows = total / columns;
     
-    
+  
     printf("\n==============consuming rules =====================\n");
+    
+    
     
     for(int row=0; row < rows; row++ ) {
         char * workStr = strConfig[row];
@@ -114,6 +117,11 @@ int main(int argc, const char * argv[]) {
               case 2:
                       g=0;
                       char * tk = strtok(token, CARET);
+                      // erase operations
+                      
+                      for(int o=0; o <  OPLEN; o++){
+                           strcpy(config.operations[o],"");
+                       }
                       while (tk != NULL) {
                           strcpy(config.operations[g],tk);
                           printf( " operation %s ", config.operations[g]);
@@ -124,15 +132,17 @@ int main(int argc, const char * argv[]) {
                     break;
               case 3:
                    // grabbed last one up top
-                          printf("next mConfig %s\n", ptrNextConfig);
+                      printf("next mConfig %s\n", ptrNextConfig);
                     break;
               }
               token = strtok( NULL, PIPE);
               b++;
             
       }
+        printf(" nextConfig %s\n", config.nextConfig);
         configs[i++]=config;
-             printf("\n===================end of that mConfig=================\n");
+        
+        printf("\n===================end of that mConfig=================\n");
     
     }
     
@@ -142,7 +152,7 @@ int main(int argc, const char * argv[]) {
     char *ptrTape=tape;
     
     int times = 0; // control number of runs
-    int stop = 4; // control number of runs
+    int stop = 40; // control number of runs
     
     int whichConfig=0;
     
@@ -154,45 +164,46 @@ int main(int argc, const char * argv[]) {
         if (times==0) {
             config = configs[whichConfig];
         }
+    
+    //    printf("using configuration mConfig %s symbol %s nextConfig %s\n", config.mConfig, config.symbol, config.nextConfig);
         
-
-        printf("using configuration mConfig %s symbol %s nextConfig %s\n", config.mConfig, config.symbol, config.nextConfig);
+        strncpy(symbol,ptrTape, 1);
+        
+        printf("mConfig %s ", config.mConfig);
         
      // load symbol that matches space on tape None, 1, 0
         if (strcmp(symbol, config.symbol) == 0) {
                 
-            strncpy(symbol,ptrTape, 1);
-            
             // loop through array of operations
     
                 for ( int j = 0; j < columns; j++) {
                     
                     // poor way of checking whether operation is empty, better way is variable size of array
                     
-                 /*   if (strcmp(config.operations[j],"")!=0) {
+                    if (strcmp(config.operations[j],"")!=0) {
                         printf("operation %s\n", config.operations[j]);
                     }else {
                         break;
-                    } */
+                    }
                     
                     
                     if ( (int) config.operations[j][0]== 'P') {
-                        printf("printing %s \n", config.operations[j]);
+                      //  printf("printing %s \n", config.operations[j]);
                         *ptrTape=(int) config.operations[j][1];
                        }
                     
                     if ( (int) config.operations[j][0]== 'E') {
-                        printf("erasing %s \n", config.operations[j]);
+                      //  printf("erasing %s \n", config.operations[j]);
                         *ptrTape=' ';
                        }
             
                     if ( strcmp(config.operations[j],"R") == 0) {
-                        printf("move right\n");
+                     //   printf("move right\n");
                         ptrTape++;
                        }
                     
                     if ( strcmp(config.operations[j],"L") == 0) {
-                        printf("move left\n");
+                     //   printf("move left\n");
                         ptrTape--;
                        }
                     
@@ -202,25 +213,23 @@ int main(int argc, const char * argv[]) {
                 }
             
            printf("looking for next mConfig %s \n", config.nextConfig);
-            
+        
+       
+        
            // i is how many config objects there are
             for (int x=0; x < i; x++) {
-                printf("searching config %s next config %s \n", configs[x].nextConfig, configs[x].mConfig);
+             //   printf("searching config %s next config %s \n", configs[x].nextConfig, configs[x].mConfig);
                 if (strcmp(configs[x].mConfig,config.nextConfig) == 0) {
-                    printf("found config %s next config %s \n", configs[x].mConfig, configs[x].nextConfig);
+             //       printf("found config %s next config %s \n", configs[x].mConfig, configs[x].nextConfig);
                     config = configs[x];
                     break;
                 }
             }
             
-        
+        printf("ptrTape %s\n",tape );
+        times++;
         }
         
-        times++;
-        printf("ptrTape %s\n",tape );
-    
-    
-   
      printf("done\n");
    
     
