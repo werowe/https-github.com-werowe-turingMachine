@@ -47,17 +47,20 @@ int main(int argc, const char * argv[]) {
     char strConfig[12][50] = {
         "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d1",
         "d1|1|R^Px^L^L^L|d2",
-        "d2|0|R^Px^L^L^L|q1",
+        "d2|0||q1",
         "q1|0|R^R|q2",
         "q2|1|R^R|q3",
         "q3|None|P1^L|p1",
-        "p2|x|E^R|q1",
-        "p1|@|R|f1",
-        "p2|None|L^L|p1",
+        "p1|x|E^R|q1",
+        "p2|@|R|f1",
+        "p3|None|L^L|p1",
         "f1|0|R^R|f2",
         "f2|1|R^R|f3",
         "f3|None|P0^L^L|d1",
     };
+    
+    
+    
     
   
     
@@ -91,8 +94,7 @@ int main(int argc, const char * argv[]) {
   
     printf("\n==============consuming rules =====================\n");
     
-    
-    
+
     for(int row=0; row < rows; row++ ) {
         char * workStr = strConfig[row];
         const char * ptrNextConfig = strrchr(strConfig[row], '|');
@@ -104,7 +106,7 @@ int main(int argc, const char * argv[]) {
               switch(b){
               case 0:
                    strcpy(config.mConfig,token);
-                      printf("mConfig %s ", config.mConfig);
+                    //  printf("mConfig %s ", config.mConfig);
                     break;
               case 1:
                       if (strcmp(token, "None") == 0) {
@@ -112,7 +114,7 @@ int main(int argc, const char * argv[]) {
                       } else {
                               strcpy(config.symbol,token);
                       }
-                      printf(" symbol %s", config.symbol);
+                     // printf(" symbol %s", config.symbol);
                     break;
               case 2:
                       g=0;
@@ -124,7 +126,7 @@ int main(int argc, const char * argv[]) {
                        }
                       while (tk != NULL) {
                           strcpy(config.operations[g],tk);
-                          printf( " operation %s ", config.operations[g]);
+                       //   printf( " operation %s ", config.operations[g]);
                           g++;
                           tk = strtok( NULL, CARET);
                        
@@ -132,7 +134,7 @@ int main(int argc, const char * argv[]) {
                     break;
               case 3:
                    // grabbed last one up top
-                      printf("next mConfig %s\n", ptrNextConfig);
+                    //  printf("next mConfig %s\n", ptrNextConfig);
                     break;
               }
               token = strtok( NULL, PIPE);
@@ -142,7 +144,7 @@ int main(int argc, const char * argv[]) {
         printf(" nextConfig %s\n", config.nextConfig);
         configs[i++]=config;
         
-        printf("\n===================end of that mConfig=================\n");
+     //   printf("\n===================end of that mConfig=================\n");
     
     }
     
@@ -169,11 +171,12 @@ int main(int argc, const char * argv[]) {
         
         strncpy(symbol,ptrTape, 1);
         
-        printf("mConfig %s ", config.mConfig);
+       printf("mConfig %s ", config.mConfig);
         
      // load symbol that matches space on tape None, 1, 0
         if (strcmp(symbol, config.symbol) == 0) {
                 
+            printf(" symbol %s ", symbol);
             // loop through array of operations
     
                 for ( int j = 0; j < columns; j++) {
@@ -181,7 +184,8 @@ int main(int argc, const char * argv[]) {
                     // poor way of checking whether operation is empty, better way is variable size of array
                     
                     if (strcmp(config.operations[j],"")!=0) {
-                        printf("operation %s\n", config.operations[j]);
+                     //   printf("operation %s", config.operations[j]);
+                        ;
                     }else {
                         break;
                     }
@@ -207,12 +211,12 @@ int main(int argc, const char * argv[]) {
                         ptrTape--;
                        }
                     
-                    printf("tape %sEND\n", tape);
+             //       printf("tape %sEND\n", tape);
                         
                     }
                 }
             
-           printf("looking for next mConfig %s \n", config.nextConfig);
+         //  printf("looking for next mConfig %s \n", config.nextConfig);
         
        
         
@@ -226,7 +230,7 @@ int main(int argc, const char * argv[]) {
                 }
             }
             
-        printf("ptrTape %s\n",tape );
+        printf("\n tape %s\n",tape );
         times++;
         }
         
