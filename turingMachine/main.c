@@ -16,18 +16,20 @@
 #define PIPE "|"
 #define CARET "^"
 #define OPLEN 15
+#define SYMLEN 4
+#define CFSIZE 500
 
 struct Configuration {
    char mConfig[3];
-   char  symbol[50];
+   char  symbol[4];
     char  operations[OPLEN][3];
    char nextConfig[3];
 };
 
 int main(int argc, const char * argv[]) {
     
-    struct Configuration configs[500];
-
+    struct Configuration configs[CFSIZE];
+    struct Configuration loopConfigs[CFSIZE];
     
     int i = 0;
  
@@ -45,24 +47,19 @@ int main(int argc, const char * argv[]) {
     */
     
     char strConfig[12][50] = {
-        "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d1",
-        "d1|1|R^Px^L^L^L|d2",
-        "d2|0||q1",
-        "q1|0|R^R|q2",
-        "q2|1|R^R|q3",
-        "q3|None|P1^L|p1",
-        "p1|x|E^R|q1",
-        "p2|@|R|f1",
-        "p3|None|L^L|p1",
-        "f1|0|R^R|f2",
-        "f2|1|R^R|f3",
-        "f3|None|P0^L^L|d1",
+        "a|None|P@^R^P@^R^P0^R^R^P0^L^L|d",
+        "d|1|R^Px^L^L^L|d",
+        "d|0||q",
+        "q|0|R^R|q",
+        "q|1|R^R|q",
+        "q|None|P1^L|p",
+        "p|x|E^R|q",
+        "p|@|R|f",
+        "p|None|L^L|p",
+        "f|0|R^R|f",
+        "f|1|R^R|f",
+        "f|None|P0^L^L|d",
     };
-    
-    
-    
-    
-  
     
     
     /* 0.01010101001
@@ -83,16 +80,12 @@ int main(int argc, const char * argv[]) {
            "b|1|R^R^P0|b"
       };
      */
-    
 
     int g;
     
       int total = sizeof(strConfig);
       int columns = sizeof(strConfig[0]);
       int rows = total / columns;
-    
-  
-    printf("\n==============consuming rules =====================\n");
     
 
     for(int row=0; row < rows; row++ ) {
@@ -134,7 +127,7 @@ int main(int argc, const char * argv[]) {
                     break;
               case 3:
                    // grabbed last one up top
-                    //  printf("next mConfig %s\n", ptrNextConfig);
+             
                     break;
               }
               token = strtok( NULL, PIPE);
@@ -143,9 +136,7 @@ int main(int argc, const char * argv[]) {
       }
         printf(" nextConfig %s\n", config.nextConfig);
         configs[i++]=config;
-        
-     //   printf("\n===================end of that mConfig=================\n");
-    
+  
     }
     
  
@@ -156,27 +147,31 @@ int main(int argc, const char * argv[]) {
     int times = 0; // control number of runs
     int stop = 40; // control number of runs
     
-    int whichConfig=0;
-    
     // symbol at position on tape
     
     char symbol[]=" ";
+  
+    // point to first config
+    config = configs[0];
+    
+    int toLoad = 1;
+    
+    loopConfigs[0]=configs[0];
     
     while (times<stop) {
-        if (times==0) {
-            config = configs[whichConfig];
-        }
     
-    //    printf("using configuration mConfig %s symbol %s nextConfig %s\n", config.mConfig, config.symbol, config.nextConfig);
-        
         strncpy(symbol,ptrTape, 1);
         
-       printf("mConfig %s ", config.mConfig);
+        // loop through all mConfigs
+        
+    
+        
+        for (int k = 0; k < toLoad; k++) {
+            config = loopConfigs[k];
         
      // load symbol that matches space on tape None, 1, 0
         if (strcmp(symbol, config.symbol) == 0) {
                 
-            printf(" symbol %s ", symbol);
             // loop through array of operations
     
                 for ( int j = 0; j < columns; j++) {
@@ -189,10 +184,8 @@ int main(int argc, const char * argv[]) {
                     }else {
                         break;
                     }
-                    
-                    
+                                        
                     if ( (int) config.operations[j][0]== 'P') {
-                      //  printf("printing %s \n", config.operations[j]);
                         *ptrTape=(int) config.operations[j][1];
                        }
                     
@@ -210,23 +203,22 @@ int main(int argc, const char * argv[]) {
                      //   printf("move left\n");
                         ptrTape--;
                        }
-                    
-             //       printf("tape %sEND\n", tape);
                         
                     }
                 }
             
-         //  printf("looking for next mConfig %s \n", config.nextConfig);
-        
-       
+        }
+            // erase loop configs for next run
+        memset(&loopConfigs, 0, sizeof(loopConfigs));
         
            // i is how many config objects there are
-            for (int x=0; x < i; x++) {
-             //   printf("searching config %s next config %s \n", configs[x].nextConfig, configs[x].mConfig);
+        
+            toLoad=0;
+            
+            for (int x=0; x < rows; x++) {
                 if (strcmp(configs[x].mConfig,config.nextConfig) == 0) {
-             //       printf("found config %s next config %s \n", configs[x].mConfig, configs[x].nextConfig);
-                    config = configs[x];
-                    break;
+                    loopConfigs[toLoad] = configs[x];
+                    toLoad++;
                 }
             }
             
@@ -235,12 +227,9 @@ int main(int argc, const char * argv[]) {
         }
         
      printf("done\n");
-   
-    
+
     int exp=-1;
     
-   
-  
     double rational=0;
     
     // calculate like this:
