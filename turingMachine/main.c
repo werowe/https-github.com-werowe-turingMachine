@@ -139,6 +139,9 @@ int main(int argc, const char * argv[]) {
   
     }
     
+    
+    // PROBLEM figure out why it's no printing an X
+    
  
   
     char tape[] = "                                                                                                                  " ;
